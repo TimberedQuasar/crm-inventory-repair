@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine  #version
+    container_name: crm_postgres_db #name of container
+    environment:
+      POSTGRES_USER: postgres          # login
+      POSTGRES_PASSWORD: password   # password
+      POSTGRES_DB: crm_inventory_repair  # name of data base
+    ports:
+      - "5432:5432"  # Port: host:container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - crm_network
+    healthcheck: # ← DODAJ!
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: crm_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"  # Dostęp przez http://localhost:5050
+    networks:
+      - crm_network
+    depends_on:  # ← DODAJ!
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+
+networks:
+  crm_network:
+    driver: bridge
