@@ -1,0 +1,20 @@
+### Lista klientów
+GET http://localhost:8080/api/customers
+
+### Pobierz klienta po ID
+GET http://localhost:8080/api/customers/1
+
+### Utwórz klienta
+POST http://localhost:8080/api/customers
+Content-Type: application/json
+
+{
+  "companyName": "John Doe Sp. z o.o.",
+  "contactPerson": "Jan Kowalski",
+  "email": "something@email.com",
+  "phone": "+48 123 456 789",
+  "address": "ul. Przykładowa 1",
+  "city": "Warszawa",
+  "state": "Mazowieckie",
+  "zip": "00-001"
+}

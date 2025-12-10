@@ -1,43 +1,82 @@
 package com.crm.crminventoryrepair.controller;
 
-import com.crm.crminventoryrepair.entity.Customer;
+import com.crm.crminventoryrepair.dto.CustomerCreateDto;
+import com.crm.crminventoryrepair.dto.CustomerDto;
 import com.crm.crminventoryrepair.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Kontroler REST obsługujący operacje na zasobie "Customer".
+ *
+ * Bazowy adres dla wszystkich endpointów: /api/customers (zdefiniowane przez server.servlet.context-path=/api
+ * oraz @RequestMapping("/customers")).
+ *
+ * Udostępnia operacje:
+ * - pobranie listy klientów (GET /api/customers),
+ * - pobranie konkretnego klienta po ID (GET /api/customers/{id}),
+ * - utworzenie nowego klienta (POST /api/customers).
+ */
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerController {
-    private final CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
+    /**
+     * Warstwa serwisowa odpowiedzialna za logikę biznesową klientów.
+     */
+    private final CustomerService service;
+
+    /**
+     * Tworzy kontroler klientów wstrzykując zależność serwisu.
+     *
+     * @param service serwis klientów
+     */
+    public CustomerController(CustomerService service) {
+        this.service = service;
     }
 
+    /**
+     * Zwraca listę wszystkich klientów.
+     *
+     * Endpoint: GET /api/customers
+     *
+     * @return lista obiektów CustomerDto reprezentujących klientów
+     */
     @GetMapping
-    public List<Customer> all() {
-        return customerService.findAll();
+    public List<CustomerDto> list() {
+        return service.findAll();
     }
 
+    /**
+     * Zwraca szczegóły klienta o podanym identyfikatorze.
+     *
+     * Endpoint: GET /api/customers/{id}
+     *
+     * @param id identyfikator klienta (Integer)
+     * @return odpowiedź HTTP 200 OK z CustomerDto w body; jeśli klient nie istnieje, serwis rzuci wyjątek 404
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> get(@PathVariable Integer id) {
-        return customerService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CustomerDto> get(@PathVariable Integer id) {
+        CustomerDto dto = service.findById(id);
+        return ResponseEntity.ok(dto);
     }
 
+    /**
+     * Tworzy nowego klienta na podstawie danych wejściowych.
+     *
+     * Endpoint: POST /api/customers
+     * Walidacja: dane wejściowe są walidowane adnotacjami z CustomerCreateDto (np. email, telefon, zip).
+     *
+     * @param dto dane wejściowe klienta (CustomerCreateDto), walidowane przez @Valid
+     * @return odpowiedź HTTP 201 Created, Location: /customers/{id} oraz CustomerDto w body
+     */
     @PostMapping
-    public ResponseEntity<Customer> create(@RequestBody Customer customer) {
-        Customer saved = customerService.save(customer);
-        return ResponseEntity.created(URI.create("/api/customers/" + saved.getId())).body(saved);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        customerService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CustomerDto> create(@Valid @RequestBody CustomerCreateDto dto) {
+        CustomerDto saved = service.create(dto);
+        return ResponseEntity.created(URI.create("/customers/" + saved.getId())).body(saved);
     }
 }

@@ -23,7 +23,7 @@ CREATE TABLE users (
 -- Tabela Customers
 CREATE TABLE customers (
     id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    company_name VARCHAR(200) NOT NULL,
+    company_name VARCHAR(200) UNIQUE NOT NULL,
     contact_person VARCHAR(100),
     email VARCHAR(100),
     phone VARCHAR(20),

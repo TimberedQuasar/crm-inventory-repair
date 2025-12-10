@@ -1,6 +1,9 @@
 package com.crm.crminventoryrepair.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,11 +24,17 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "company_name", nullable = false)
+    @Column(name = "company_name", nullable = false,  unique = true, length = 100)
+    @NotBlank(message = "companyName is required")
+    @ToString.Include
     private String companyName;
 
-    private String contact_person;
+    private String contactPerson;
+
+    @Email(message = "Email should be valid")
     private String email;
+
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phone;
     private String address;
     private String city;
