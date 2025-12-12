@@ -5,8 +5,8 @@ import com.crm.crminventoryrepair.dto.CustomerDto;
 import com.crm.crminventoryrepair.entity.Customer;
 import com.crm.crminventoryrepair.mapper.CustomerMapper;
 import com.crm.crminventoryrepair.repository.CustomerRepository;
-import com.crm.crminventoryrepair.service.exeption.DuplicateResourceException;
-import com.crm.crminventoryrepair.service.exeption.ResourceNotFoundException;
+import com.crm.crminventoryrepair.service.exception.DuplicateResourceException;
+import com.crm.crminventoryrepair.service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

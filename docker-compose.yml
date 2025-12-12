@@ -2,20 +2,20 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16-alpine  #version
-    container_name: crm_postgres_db #name of container
-    environment:
-      POSTGRES_USER: postgres          # login
-      POSTGRES_PASSWORD: password   # password
-      POSTGRES_DB: crm_inventory_repair  # name of data base
-    ports:
-      - "5432:5432"  # Port: host:container
+    image: postgres:16-alpine
+    container_name: crm_postgres_db
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: crm_inventory_repair
+    ports: 
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - crm_network
-    healthcheck: # ← DODAJ!
+    healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
@@ -24,19 +24,35 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: crm_pgadmin
-    environment:
+    environment: 
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"  # Dostęp przez http://localhost:5050
+    ports: 
+      - "5050:80"
     networks:
       - crm_network
-    depends_on:  # ← DODAJ!
+    depends_on:
       postgres:
         condition: service_healthy
 
+  frontend:
+    image: node:25-alpine
+    container_name:  crm_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - node_modules_volume:/app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    networks:
+      - crm_network
+    depends_on:
+      - postgres
+
 volumes:
-  postgres_data:
+  postgres_data: 
+  node_modules_volume: 
 
 networks:
   crm_network:

@@ -1,4 +1,4 @@
-package com.crm.crminventoryrepair.service.exeption;
+package com.crm.crminventoryrepair.service.exception;
 
 /**
  * Wyjątek oznaczający próbę utworzenia/zmodyfikowania zasobu,
